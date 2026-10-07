@@ -1,0 +1,36 @@
+name: HTML Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-html:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Clone the repository files into the runner
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment for tools
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-node-version: '20'
+
+      # Step 3: Install HTMLhint (Syntax Linter) and Lychee (Link Checker)
+      - name: Install Tooling
+        run: |
+          npm install -g htmlhint
+          curl -sSfL https://themesberg.com | sh
+
+      # Step 4: Check HTML files for semantic and syntax errors
+      - name: Run HTMLHint Linter
+        run: htmlhint "**/*.html"
+
+      # Step 5: Scan HTML files for broken links or dead URLs
+      - name: Check for Broken Links
+        run: lychee "**/*.html"
